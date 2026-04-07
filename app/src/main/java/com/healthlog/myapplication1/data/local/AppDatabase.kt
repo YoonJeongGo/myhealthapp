@@ -29,8 +29,8 @@ import com.healthlog.myapplication1.data.local.entity.WeightLogEntity
         MealItemEntity::class,
         ExerciseRecordEntity::class
     ],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
