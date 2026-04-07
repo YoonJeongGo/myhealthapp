@@ -1,53 +1,34 @@
-package com.healthlog.myapplication1.data.repository
+package com.healthlog.myapplication1.data.local.entity
 
-import com.healthlog.myapplication1.data.local.AppDatabase
-import com.healthlog.myapplication1.data.local.entity.ExerciseRecordEntity
-import kotlinx.coroutines.flow.Flow
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
-class ExerciseRepository(
-    private val db: AppDatabase
-) {
+@Entity(
+    tableName = "exercise_record",
+    indices = [Index(value = ["date"])]
+)
+data class ExerciseRecordEntity(
 
-    private val exerciseRecordDao = db.exerciseRecordDao()
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
 
-    suspend fun insertExercise(
-        date: String,
-        exerciseName: String,
-        duration: Int,
-        calories: Int,
-        note: String? = null
-    ) {
-        require(date.isNotBlank()) { "date must not be blank" }
-        require(exerciseName.isNotBlank()) { "exerciseName must not be blank" }
-        require(duration >= 0) { "duration must not be negative" }
-        require(calories >= 0) { "calories must not be negative" }
+    @ColumnInfo(name = "date")
+    val date: String, // 예: "2026-04-07"
 
-        exerciseRecordDao.insert(
-            ExerciseRecordEntity(
-                date = date,
-                exerciseName = exerciseName,
-                duration = duration,
-                calories = calories,
-                note = note
-            )
-        )
-    }
+    @ColumnInfo(name = "exercise_name")
+    val exerciseName: String,
 
-    fun getExercisesByDate(date: String): Flow<List<ExerciseRecordEntity>> {
-        require(date.isNotBlank()) { "date must not be blank" }
-        return exerciseRecordDao.getByDate(date)
-    }
+    @ColumnInfo(name = "duration")
+    val duration: Int, // 분
 
-    suspend fun updateExercise(entity: ExerciseRecordEntity) {
-        require(entity.date.isNotBlank()) { "date must not be blank" }
-        require(entity.exerciseName.isNotBlank()) { "exerciseName must not be blank" }
-        require(entity.duration >= 0) { "duration must not be negative" }
-        require(entity.calories >= 0) { "calories must not be negative" }
+    @ColumnInfo(name = "calories")
+    val calories: Int, // kcal
 
-        exerciseRecordDao.update(entity)
-    }
+    @ColumnInfo(name = "timestamp")
+    val timestamp: Long = System.currentTimeMillis(),
 
-    suspend fun deleteExercise(entity: ExerciseRecordEntity) {
-        exerciseRecordDao.delete(entity)
-    }
-}
+    @ColumnInfo(name = "note")
+    val note: String? = null
+)

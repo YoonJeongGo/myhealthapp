@@ -13,7 +13,10 @@ import com.healthlog.myapplication1.data.local.entity.ExerciseRecordEntity
 import com.healthlog.myapplication1.data.local.entity.MealItemEntity
 import com.healthlog.myapplication1.data.local.entity.MealRecordEntity
 import com.healthlog.myapplication1.data.local.entity.WeightLogEntity
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : Activity() {
 
@@ -61,17 +64,15 @@ class MainActivity : Activity() {
         resultTextView.text = "실행 중..."
 
         CoroutineScope(Dispatchers.Main).launch {
-
             val result = withContext(Dispatchers.IO) {
-
                 val log = StringBuilder()
 
                 try {
-                    val db = AppDatabase.getInstance(applicationContext)
+                    val db = AppDatabase.getDatabase(applicationContext)
 
                     val dailyLogDao = db.dailyLogDao()
                     val weightLogDao = db.weightLogDao()
-                    val bodyFatLogDao = db.bodyFatLogDao()   // ✔️ 수정됨
+                    val bodyFatLogDao = db.bodyFatLogDao()
                     val mealRecordDao = db.mealRecordDao()
                     val mealItemDao = db.mealItemDao()
                     val exerciseRecordDao = db.exerciseRecordDao()
@@ -90,12 +91,20 @@ class MainActivity : Activity() {
                     }
 
                     weightLogDao.insert(
-                        WeightLogEntity(date = date, weight = 77f)
+                        WeightLogEntity(
+                            date = date,
+                            weight = 77f
+                        )
                     )
+                    dailyLogDao.updateLatestWeight(date, 77f)
 
                     bodyFatLogDao.insert(
-                        BodyFatLogEntity(date = date, bodyFat = 18f)
+                        BodyFatLogEntity(
+                            date = date,
+                            bodyFat = 18f
+                        )
                     )
+                    dailyLogDao.updateLatestBodyFat(date, 18f)
 
                     val mealId = mealRecordDao.insert(
                         MealRecordEntity(
@@ -126,16 +135,15 @@ class MainActivity : Activity() {
                     exerciseRecordDao.insert(
                         ExerciseRecordEntity(
                             date = date,
-                            type = "헬스",
-                            durationMinutes = 60,
-                            caloriesBurned = 300,
-                            createdAt = now
+                            exerciseName = "헬스",
+                            duration = 60,
+                            calories = 300,
+                            timestamp = now
                         )
                     )
 
                     log.append("DB 테스트 성공\n")
                     log.append("meal total = $sum")
-
                 } catch (e: Exception) {
                     log.append("실패: ${e.message}")
                 }
