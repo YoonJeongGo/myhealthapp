@@ -33,7 +33,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    // ❌ Compose 제거
     buildFeatures {
         compose = false
     }
@@ -48,13 +47,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    // ❌ Compose 관련 전부 제거
-    // implementation(libs.androidx.activity.compose)
-    // implementation(platform(libs.androidx.compose.bom))
-    // implementation(libs.androidx.compose.ui)
-    // implementation(libs.androidx.compose.ui.graphics)
-    // implementation(libs.androidx.compose.ui.tooling.preview)
-    // implementation(libs.androidx.compose.material3)
+    // ✅ ViewModel + Coroutine 추가 (핵심)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
