@@ -1,30 +1,34 @@
 package com.healthlog.myapplication1.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.healthlog.myapplication1.data.local.entity.MealRecordEntity
+import com.healthlog.myapplication1.data.local.entity.MealRecordWithItems
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MealRecordDao {
 
-    @Insert
-    suspend fun insert(record: MealRecordEntity): Long
+    @Transaction
+    @Query("SELECT * FROM meal_record WHERE date = :date ORDER BY created_at ASC")
+    fun getWithItemsByDate(date: String): Flow<List<MealRecordWithItems>>
+
+    @Transaction
+    @Query("SELECT * FROM meal_record WHERE id = :id LIMIT 1")
+    suspend fun getWithItemsById(id: Int): MealRecordWithItems?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(entity: MealRecordEntity): Long
 
     @Update
-    suspend fun update(record: MealRecordEntity)
+    suspend fun update(entity: MealRecordEntity)
 
-    @Query("SELECT * FROM meal_record WHERE date = :date")
-    suspend fun getByDate(date: String): List<MealRecordEntity>
+    @Delete
+    suspend fun delete(entity: MealRecordEntity)
 
-    @Query("""
-        UPDATE meal_record 
-        SET totalCalories = :calories 
-        WHERE id = :id
-    """)
+    @Query("UPDATE meal_record SET total_calories = :calories, updated_at = :now WHERE id = :id")
     suspend fun updateTotalCalories(
         id: Int,
-        calories: Int
+        calories: Int,
+        now: Long = System.currentTimeMillis()
     )
 }

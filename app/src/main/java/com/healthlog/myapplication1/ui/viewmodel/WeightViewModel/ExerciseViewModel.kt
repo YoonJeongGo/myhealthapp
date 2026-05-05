@@ -14,7 +14,7 @@ class ExerciseViewModel(
     private val repository: ExerciseRepository
 ) : ViewModel() {
 
-    private val _saveState = MutableStateFlow<String>("idle")
+    private val _saveState = MutableStateFlow("idle")
     val saveState: StateFlow<String> = _saveState.asStateFlow()
 
     private val _exerciseFlow = MutableStateFlow<Flow<List<ExerciseRecordEntity>>?>(null)
@@ -22,18 +22,20 @@ class ExerciseViewModel(
 
     fun saveExercise(
         date: String,
-        type: String,
-        durationMinutes: Int,
-        caloriesBurned: Int
+        exerciseName: String,
+        duration: Int,
+        calories: Int,
+        note: String? = null
     ) {
         viewModelScope.launch {
             try {
                 _saveState.value = "loading"
                 repository.insertExercise(
                     date = date,
-                    type = type,
-                    durationMinutes = durationMinutes,
-                    caloriesBurned = caloriesBurned
+                    exerciseName = exerciseName,
+                    duration = duration,
+                    calories = calories,
+                    note = note
                 )
                 _saveState.value = "success"
             } catch (e: Exception) {

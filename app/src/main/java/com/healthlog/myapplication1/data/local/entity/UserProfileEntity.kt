@@ -1,5 +1,6 @@
 package com.healthlog.myapplication1.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,8 +12,20 @@ data class UserProfileEntity(
 
     val name: String,
     val age: Int,
-    val height: Float,
-    val weight: Float,
+    val gender: String,         // "MALE" or "FEMALE"
+    val height: Float,          // cm
+    val weight: Float,          // kg (initial)
+    val goal: String,           // "LOSS" / "MAINTAIN" / "GAIN"
 
-    val createdAt: Long = System.currentTimeMillis()
+    @ColumnInfo(name = "activity_level")
+    val activityLevel: Float,   // 1.2 ~ 1.9
+
+    val bmr: Float,
+    val tdee: Float,
+
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long = System.currentTimeMillis(),
+
+    @ColumnInfo(name = "updated_at")
+    val updatedAt: Long = System.currentTimeMillis()
 )
